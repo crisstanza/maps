@@ -16,4 +16,5 @@ git checkout --orphan gh-pages
 git add .
 git commit -m "Initial commit."
 git push origin gh-pages
+git checkout master
 ```
