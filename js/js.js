@@ -4,36 +4,55 @@
 
 	// http://www.farb-tabelle.de/en/table-of-color.htm
 	var COLOR = [['#8B0000', '#EEA9B8'], ['#228B22', '#C1FFC1'], ['#0000FF', '#76EEC6']];
+	var COLOR2 = ['#00FF00', '#0000FF'];
 	var ICON = ['red', 'green', 'blue'];
 
 	var brasil = { x: -15.7797200, y: -47.9297200 };
 
+	function drawRings() {
+		for (var i = 0 ; i < cercas.length ; i++) {
+			var cerca = cercas[i];
+			var coordinates = [];
+			for (var j = 0 ; j < cerca.length ; j++) {
+				var point = new google.maps.LatLng(cerca[j + 1], cerca[j]);
+				j+=1;
+				coordinates.push(point);
+				var path = new google.maps.Polyline({
+					path: coordinates,
+					geodesic: true,
+					strokeColor: COLOR2[i%2],
+					strokeOpacity: 0.75,
+					strokeWeight: 2
+				});
+				path.setMap(map);
+			}
+		}
+	}
+
 	function drawLines() {
 		var coords;
 		for (var m = 0 ; m < geometries.length ; m++) {
-			if ( true || m == 0 || m == 1 || m == 2 ) {
-				var geometry = geometries[m];
-				for (var j = 0 ; j < geometry.length ; j++) {
-					poli = geometry[j];
-					for (var k = 0 ; k < poli.length ; k++) {
-						var coords = poli[k];
-						var coordinates = [];
-						for (var i = 0 ; i < coords.length ; i++ ) {
-							var point = new google.maps.LatLng(coords[i + 1], coords[i]);
-							i+=1;
-							coordinates.push(point);
-						}
-						var path = new google.maps.Polyline({
-							path: coordinates,
-							geodesic: true,
-							strokeColor: COLOR[m%3][j%2],
-							strokeOpacity: 0.75,
-							strokeWeight: 3
-						});
-						path.setMap(map);
-						if ( j == (geometry.length - 1)) {
-							new google.maps.Marker({ position: coordinates[coordinates.length - 1], map: map, title: 'End ('+m+')', icon: new google.maps.MarkerImage('http://maps.google.com/mapfiles/ms/icons/' + ICON[m%3] + '.png') });
-						}
+			var geometry = geometries[m];
+			for (var j = 0 ; j < geometry.length ; j++) {
+				poli = geometry[j];
+				for (var k = 0 ; k < poli.length ; k++) {
+					var coords = poli[k];
+					var coordinates = [];
+					for (var i = 0 ; i < coords.length ; i++ ) {
+						var point = new google.maps.LatLng(coords[i + 1], coords[i]);
+						i+=1;
+						coordinates.push(point);
+					}
+					var path = new google.maps.Polyline({
+						path: coordinates,
+						geodesic: true,
+						strokeColor: COLOR[m%3][j%2],
+						strokeOpacity: 0.75,
+						strokeWeight: 3
+					});
+					path.setMap(map);
+					if ( j == (geometry.length - 1)) {
+						new google.maps.Marker({ position: coordinates[coordinates.length - 1], map: map, title: 'End ('+m+')', icon: new google.maps.MarkerImage('http://maps.google.com/mapfiles/ms/icons/' + ICON[m%3] + '.png') });
 					}
 				}
 			}
@@ -63,6 +82,7 @@
 		map = new google.maps.Map(divMap, mapProp);
 		navigator.geolocation.getCurrentPosition(getCurrentPosition_Success, getCurrentPosition_Error, options);
 		drawLines();
+		drawRings();
 	}
 
 	window.addEventListener('load', start, false);
